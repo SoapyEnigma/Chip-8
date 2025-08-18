@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <array>
+#include <random>
 #include <string_view>
 
 constexpr auto START_ADDRESS = 0x200;
@@ -54,6 +55,10 @@ private:
 
     u8 _delayTimer;
     u8 _soundTimer;
+
+    std::random_device _rd;
+    std::mt19937 _engine;
+    std::uniform_int_distribution<i32> _dist{ 0, 255 };
 
     u8 _fontset[80] =
     {

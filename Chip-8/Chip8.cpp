@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <random>
 
 Chip8::Chip8()
 {
@@ -40,6 +39,8 @@ void Chip8::LoadROM(std::string_view filePath)
 
     for (u32 i = 0; i < size; i++)
         _memory[START_ADDRESS + i] = buffer[i];
+
+    _engine = std::mt19937(_rd());
 }
 
 void Chip8::Init()
@@ -88,7 +89,7 @@ void Chip8::Execute()
     {
     case 0x0000:
     {
-        switch (_byte >> 1)
+        switch (_byte)
         {
         case 0x0E0: OP_00E0(); break;
         case 0x0EE: OP_00EE(); break;
@@ -296,11 +297,7 @@ void Chip8::OP_BNNN()
 
 void Chip8::OP_CXNN()
 {
-    std::random_device rd;
-    std::mt19937 engine(rd());
-    std::uniform_int_distribution<i32> dist(0, 255);
-
-    _registers[_x] = dist(engine) & _byte;
+    _registers[_x] = _dist(_engine) & _byte;
 }
 
 void Chip8::OP_DXYN()
