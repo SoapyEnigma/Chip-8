@@ -66,10 +66,15 @@ static void KeyCallback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 
-
     Chip8* chip = static_cast<Chip8*>(glfwGetWindowUserPointer(window));
     if (!chip)
         return;
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        chip->Reset();
+        return;
+    }
 
     u8 hex = MapGlfwKeyToChip8(key);
     if (hex == 0xFF)

@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 
 Chip8::Chip8()
 {
@@ -33,17 +32,16 @@ void Chip8::LoadROM(std::string_view filePath)
     if (START_ADDRESS + static_cast<size_t>(size) > _memory.size())
         return; // Fails
 
-    std::vector<char> buffer(size);
+    _currentRom.resize(size);
+    _currRomSize = size;
+
     file.seekg(0, std::ios::beg);
-    file.read(buffer.data(), size);
+    file.read(_currentRom.data(), size);
 
-    for (u32 i = 0; i < size; i++)
-        _memory[START_ADDRESS + i] = buffer[i];
-
-    _engine = std::mt19937(_rd());
+    std::copy(_currentRom.begin(), _currentRom.end(), _memory.begin() + START_ADDRESS);
 }
 
-void Chip8::Init()
+void Chip8::Reset()
 {
     _pc = START_ADDRESS;
     _opcode = 0;
@@ -55,9 +53,10 @@ void Chip8::Init()
     _x = 0x0;
     _y = 0x0;
 
-    _delayTimer = 60;
-    _soundTimer = 60;
+    _delayTimer = 0;
+    _soundTimer = 0;
 
+    Clear(_key);
     Clear(_screen);
     Clear(_stack);
     Clear(_registers);
@@ -66,11 +65,20 @@ void Chip8::Init()
     // Load Font
     for (i32 i = 0; i < std::size(_fontset); i++)
         _memory[FONTSET_START_ADDRESS + i] = _fontset[i];
+
+    // Reload ROM
+    if (_currRomSize)
+        std::copy(_currentRom.begin(), _currentRom.end(), _memory.begin() + START_ADDRESS);
+}
+
+void Chip8::Init()
+{
+    Reset();
 }
 
 void Chip8::Fetch()
 {
-    _opcode = (_memory[_pc] << 8u) | _memory[_pc + 1];
+    _opcode = (_memory[_pc] << 8) | _memory[_pc + 1];
     _pc += 2;
 }
 
@@ -93,7 +101,7 @@ void Chip8::Execute()
         {
         case 0x0E0: OP_00E0(); break;
         case 0x0EE: OP_00EE(); break;
-        default: printf("Unknown 00??: 0x%04X\n", _opcode); break;
+        default: OP_0NNN(); break;
         }
     } break;
     case 0x1000: OP_1NNN(); break;
@@ -160,15 +168,14 @@ void Chip8::UpdateTimers()
 
     if (_soundTimer > 0)
     {
-        if (_soundTimer == 1)
-            printf("BEEP!\n");
-
+        _beep(440, 100);
         _soundTimer--;
     }
 }
 
 void Chip8::OP_0NNN()
 {
+    /*NOP*/
 }
 
 void Chip8::OP_00E0()

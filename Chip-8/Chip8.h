@@ -2,10 +2,10 @@
 
 #include "Types.h"
 
-#include <algorithm>
 #include <array>
 #include <random>
 #include <string_view>
+#include <vector>
 
 constexpr auto START_ADDRESS = 0x200;
 constexpr auto FONTSET_START_ADDRESS = 0x50;
@@ -19,6 +19,7 @@ public:
 
     void Cycle();
     void LoadROM(std::string_view filePath);
+    void Reset();
     u32* GetPixelData() { return _screen.data(); }
 
     void KeyDown(u8 hex) { if (hex < 16) _key[hex] = 1; }
@@ -36,6 +37,9 @@ private:
     void Clear(std::array<T, S>& arr) { std::fill(std::begin(arr), std::end(arr), 0); }
 
 private:
+    std::vector<char> _currentRom;
+    size_t _currRomSize;
+
     std::array<u8, 4096> _memory;
     std::array<u8, 16> _registers;
     std::array<u8, 16> _key;
@@ -56,9 +60,8 @@ private:
     u8 _delayTimer;
     u8 _soundTimer;
 
-    std::random_device _rd;
-    std::mt19937 _engine;
-    std::uniform_int_distribution<i32> _dist{ 0, 255 };
+    std::mt19937 _engine{ std::random_device{}()};
+    std::uniform_int_distribution<u16> _dist{ 0, 255 };
 
     u8 _fontset[80] =
     {

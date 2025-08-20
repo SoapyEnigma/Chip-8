@@ -35,7 +35,7 @@ void Application::Init()
     _chip = new Chip8();
 
     _window->SetUserPtr(_chip);
-    _chip->LoadROM("../Roms/15 Puzzle [Roger Ivie].ch8");
+    _chip->LoadROM("../Roms/Clock Program [Bill Fisher, 1981].ch8");
 
     _screen = new Shader();
     _screenTexture = new Texture();
