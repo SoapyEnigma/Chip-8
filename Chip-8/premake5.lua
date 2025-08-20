@@ -30,7 +30,9 @@ project "Chip8"
 	filter "configurations:Debug"
 		defines { "DEBUG" }
 		symbols "On"
+		postbuildcommands { "{COPYDIR} Roms %{cfg.targetdir}/Roms" }
 
 	filter "configurations:Release"
 		defines { "NDEBUG" }
 		optimize "On"
+		postbuildcommands { "{COPYDIR} Roms %{cfg.targetdir}/Roms" }
