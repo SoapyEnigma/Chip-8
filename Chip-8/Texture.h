@@ -32,7 +32,9 @@ public:
 
     void CreateEmpty(i32 width, i32 height)
     {
-        _w = width; _h = height;
+        _w = width;
+        _h = height;
+
         glBindTexture(GL_TEXTURE_2D, _id);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _w, _h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -52,7 +54,7 @@ public:
         glBindTexture(GL_TEXTURE_2D, _id);
     }
 
-    u32 id() const { return _id; }
+    u32 ID() const { return _id; }
 
 private:
     u32 _id;

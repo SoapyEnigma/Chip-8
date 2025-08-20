@@ -1,5 +1,10 @@
 #include "Application.h"
 
+#include "Window.h"
+#include "Texture.h"
+#include "Chip8.h"
+#include "DebugWindow.h"
+
 Application::Application()
 {
     Init();
@@ -7,11 +12,11 @@ Application::Application()
 
 Application::~Application()
 {
+    delete _debugWindow;
+    _debugWindow = nullptr;
+
     delete _screenTexture;
     _screenTexture = nullptr;
-
-    delete _screen;
-    _screen = nullptr;
 
     delete _chip;
     _chip = nullptr;
@@ -35,11 +40,12 @@ void Application::Init()
     _chip = new Chip8();
 
     _window->SetUserPtr(_chip);
-    _chip->LoadROM("../Roms/Clock Program [Bill Fisher, 1981].ch8");
+    _chip->LoadROM("./Roms/Clock Program [Bill Fisher, 1981].ch8");
 
-    _screen = new Shader();
     _screenTexture = new Texture();
     _screenTexture->CreateEmpty(64, 32);
+
+    _debugWindow = new DebugWindow(_window, _chip);
 }
 
 void Application::Update()
@@ -51,7 +57,6 @@ void Application::Update()
 
 void Application::Render()
 {
-    _screenTexture->Bind();
-    _screen->Draw();
+    _debugWindow->Render(_screenTexture);
     _window->Render();
 }

@@ -2,6 +2,8 @@
 
 #include "Chip8.h"
 
+#include <glad/glad.h>
+
 static void KeyCallback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mods);
 static u8 MapGlfwKeyToChip8(i32 key);
 
@@ -55,7 +57,7 @@ void Window::Init()
         // Fails
     }
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glDisable(GL_DEPTH_TEST);
 
     glfwSwapInterval(1);
@@ -91,26 +93,26 @@ static u8 MapGlfwKeyToChip8(i32 key)
 {
     switch (key)
     {
-    case GLFW_KEY_1: return 0x1;
-    case GLFW_KEY_2: return 0x2;
-    case GLFW_KEY_3: return 0x3;
-    case GLFW_KEY_4: return 0xC;
+        case GLFW_KEY_1: return 0x1;
+        case GLFW_KEY_2: return 0x2;
+        case GLFW_KEY_3: return 0x3;
+        case GLFW_KEY_4: return 0xC;
 
-    case GLFW_KEY_Q: return 0x4;
-    case GLFW_KEY_W: return 0x5;
-    case GLFW_KEY_E: return 0x6;
-    case GLFW_KEY_R: return 0xD;
+        case GLFW_KEY_Q: return 0x4;
+        case GLFW_KEY_W: return 0x5;
+        case GLFW_KEY_E: return 0x6;
+        case GLFW_KEY_R: return 0xD;
 
-    case GLFW_KEY_A: return 0x7;
-    case GLFW_KEY_S: return 0x8;
-    case GLFW_KEY_D: return 0x9;
-    case GLFW_KEY_F: return 0xE;
+        case GLFW_KEY_A: return 0x7;
+        case GLFW_KEY_S: return 0x8;
+        case GLFW_KEY_D: return 0x9;
+        case GLFW_KEY_F: return 0xE;
 
-    case GLFW_KEY_Z: return 0xA;
-    case GLFW_KEY_X: return 0x0;
-    case GLFW_KEY_C: return 0xB;
-    case GLFW_KEY_V: return 0xF;
+        case GLFW_KEY_Z: return 0xA;
+        case GLFW_KEY_X: return 0x0;
+        case GLFW_KEY_C: return 0xB;
+        case GLFW_KEY_V: return 0xF;
 
-    default: return 0xFF;
+        default: return 0xFF;
     }
 }

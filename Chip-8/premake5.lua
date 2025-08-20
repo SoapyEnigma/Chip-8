@@ -6,7 +6,7 @@ project "Chip8"
 	targetdir ("%{wks.location}/bin/%{cfg.buildcfg}")
     objdir ("%{wks.location}/bin-int/%{cfg.buildcfg}/%{prj.name}")
 	
-	dependson { "glad", "glfw" }
+	dependson { "glad", "glfw", "imgui" }
 	
 	files { "**.h", "**.cpp" }
 	
@@ -14,6 +14,7 @@ project "Chip8"
 	{
 		"%{wks.location}/Vendor/glfw/include",
         "%{wks.location}/Vendor/glad/include",
+		"%{wks.location}/Vendor/imgui",
     }
 	
 	libdirs { libout } 
@@ -22,7 +23,8 @@ project "Chip8"
 	{
 		"opengl32",
 		"glad",
-		"glfw"
+		"glfw",
+		"imgui"
 	}
 	
 	filter "configurations:Debug"

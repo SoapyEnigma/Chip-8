@@ -86,78 +86,79 @@ void Chip8::Decode()
 {
     _addr = _opcode & 0x0FFF;
     _byte = _opcode & 0x00FF;
-    _nibble = _opcode & 0xF000;
+    _hNibble = _opcode & 0xF000;
+    _lNibble = _opcode & 0x000F;
     _x = (_opcode & 0x0F00) >> 8;
     _y = (_opcode & 0x00F0) >> 4;
 }
 
 void Chip8::Execute()
 {
-    switch (_nibble)
+    switch (_hNibble)
     {
-    case 0x0000:
-    {
-        switch (_byte)
+        case 0x0000:
         {
-        case 0x0E0: OP_00E0(); break;
-        case 0x0EE: OP_00EE(); break;
-        default: OP_0NNN(); break;
-        }
-    } break;
-    case 0x1000: OP_1NNN(); break;
-    case 0x2000: OP_2NNN(); break;
-    case 0x3000: OP_3XNN(); break;
-    case 0x4000: OP_4XNN(); break;
-    case 0x5000: OP_5XY0(); break;
-    case 0x6000: OP_6XNN(); break;
-    case 0x7000: OP_7XNN(); break;
-    case 0x8000:
-    {
-        switch (_opcode & 0x000F)
+            switch (_byte)
+            {
+                case 0x0E0: OP_00E0(); break;
+                case 0x0EE: OP_00EE(); break;
+                default: OP_0NNN(); break;
+            }
+        } break;
+        case 0x1000: OP_1NNN(); break;
+        case 0x2000: OP_2NNN(); break;
+        case 0x3000: OP_3XNN(); break;
+        case 0x4000: OP_4XNN(); break;
+        case 0x5000: OP_5XY0(); break;
+        case 0x6000: OP_6XNN(); break;
+        case 0x7000: OP_7XNN(); break;
+        case 0x8000:
         {
-        case 0x0: OP_8XY0(); break;
-        case 0x1: OP_8XY1(); break;
-        case 0x2: OP_8XY2(); break;
-        case 0x3: OP_8XY3(); break;
-        case 0x4: OP_8XY4(); break;
-        case 0x5: OP_8XY5(); break;
-        case 0x6: OP_8XY6(); break;
-        case 0x7: OP_8XY7(); break;
-        case 0xE: OP_8XYE(); break;
-        default: printf("Unknown 8XY?: 0x%04X\n", _opcode); break;
-        }
-    } break;
-    case 0x9000: OP_9XY0(); break;
-    case 0xA000: OP_ANNN(); break;
-    case 0xB000: OP_BNNN(); break;
-    case 0xC000: OP_CXNN(); break;
-    case 0xD000: OP_DXYN(); break;
-    case 0xE000:
-    {
-        switch (_byte)
+            switch (_lNibble)
+            {
+                case 0x0: OP_8XY0(); break;
+                case 0x1: OP_8XY1(); break;
+                case 0x2: OP_8XY2(); break;
+                case 0x3: OP_8XY3(); break;
+                case 0x4: OP_8XY4(); break;
+                case 0x5: OP_8XY5(); break;
+                case 0x6: OP_8XY6(); break;
+                case 0x7: OP_8XY7(); break;
+                case 0xE: OP_8XYE(); break;
+                default: printf("Unknown 8XY?: 0x%04X\n", _opcode); break;
+            }
+        } break;
+        case 0x9000: OP_9XY0(); break;
+        case 0xA000: OP_ANNN(); break;
+        case 0xB000: OP_BNNN(); break;
+        case 0xC000: OP_CXNN(); break;
+        case 0xD000: OP_DXYN(); break;
+        case 0xE000:
         {
-        case 0x009E: OP_EX9E(); break;
-        case 0x00A1: OP_EXA1(); break;
-        default: printf("Unknown EX??: 0x%04X\n", _opcode); break;
-        }
-    } break;
-    case 0xF000:
-    {
-        switch (_byte)
+            switch (_byte)
+            {
+                case 0x009E: OP_EX9E(); break;
+                case 0x00A1: OP_EXA1(); break;
+                default: printf("Unknown EX??: 0x%04X\n", _opcode); break;
+            }
+        } break;
+        case 0xF000:
         {
-        case 0x0007: OP_FX07(); break;
-        case 0x000A: OP_FX0A(); break;
-        case 0x0015: OP_FX15(); break;
-        case 0x0018: OP_FX18(); break;
-        case 0x001E: OP_FX1E(); break;
-        case 0x0029: OP_FX29(); break;
-        case 0x0033: OP_FX33(); break;
-        case 0x0055: OP_FX55(); break;
-        case 0x0065: OP_FX65(); break;
-        default: printf("Unknown FX??: 0x%04X\n", _opcode); break;
-        }
-    } break;
-    default: printf("Unknown opcode: 0x%04X\n", _opcode); break;
+            switch (_byte)
+            {
+                case 0x0007: OP_FX07(); break;
+                case 0x000A: OP_FX0A(); break;
+                case 0x0015: OP_FX15(); break;
+                case 0x0018: OP_FX18(); break;
+                case 0x001E: OP_FX1E(); break;
+                case 0x0029: OP_FX29(); break;
+                case 0x0033: OP_FX33(); break;
+                case 0x0055: OP_FX55(); break;
+                case 0x0065: OP_FX65(); break;
+                default: printf("Unknown FX??: 0x%04X\n", _opcode); break;
+            }
+        } break;
+        default: printf("Unknown opcode: 0x%04X\n", _opcode); break;
     }
 }
 
@@ -171,6 +172,86 @@ void Chip8::UpdateTimers()
         _beep(440, 100);
         _soundTimer--;
     }
+}
+
+std::string Chip8::Disassemble(u16 addr) const
+{
+    const u16 op = PeekOpcode(addr);
+    const u16 nnn = op & 0x0FFF;
+    const u8  nn = u8(op & 0x00FF);
+    const u8  n = u8(op & 0x000F);
+    const u8  x = u8((op >> 8) & 0x0F);
+    const u8  y = u8((op >> 4) & 0x0F);
+
+    char buf[64];
+    switch (op & 0xF000)
+    {
+    case 0x0000:
+        switch (op)
+        {
+        case 0x00E0: return "CLS";
+        case 0x00EE: return "RET";
+        default: snprintf(buf, sizeof(buf), "SYS 0x%03X", nnn); return buf;
+        }
+
+    case 0x1000: snprintf(buf, sizeof(buf), "JP 0x%03X", nnn); return buf;
+    case 0x2000: snprintf(buf, sizeof(buf), "CALL 0x%03X", nnn); return buf;
+    case 0x3000: snprintf(buf, sizeof(buf), "SE V%X, 0x%02X", x, nn); return buf;
+    case 0x4000: snprintf(buf, sizeof(buf), "SNE V%X, 0x%02X", x, nn); return buf;
+    case 0x5000: snprintf(buf, sizeof(buf), "SE V%X, V%X", x, y); return buf;
+    case 0x6000: snprintf(buf, sizeof(buf), "LD V%X, 0x%02X", x, nn); return buf;
+    case 0x7000: snprintf(buf, sizeof(buf), "ADD V%X, 0x%02X", x, nn); return buf;
+
+    case 0x8000:
+        switch (n)
+        {
+        case 0x0: snprintf(buf, sizeof(buf), "LD V%X, V%X", x, y); break;
+        case 0x1: snprintf(buf, sizeof(buf), "OR V%X, V%X", x, y); break;
+        case 0x2: snprintf(buf, sizeof(buf), "AND V%X, V%X", x, y); break;
+        case 0x3: snprintf(buf, sizeof(buf), "XOR V%X, V%X", x, y); break;
+        case 0x4: snprintf(buf, sizeof(buf), "ADD V%X, V%X", x, y); break;
+        case 0x5: snprintf(buf, sizeof(buf), "SUB V%X, V%X", x, y); break;
+        case 0x6: snprintf(buf, sizeof(buf), "SHR V%X {,V%X}", x, y); break; // interpreter variant
+        case 0x7: snprintf(buf, sizeof(buf), "SUBN V%X, V%X", x, y); break;
+        case 0xE: snprintf(buf, sizeof(buf), "SHL V%X {,V%X}", x, y); break; // interpreter variant
+        default:  snprintf(buf, sizeof(buf), "UNKNOWN 0x%04X", op);  break;
+        }
+        return buf;
+
+    case 0x9000: snprintf(buf, sizeof(buf), "SNE V%X, V%X", x, y); return buf;
+    case 0xA000: snprintf(buf, sizeof(buf), "LD I, 0x%03X", nnn); return buf;
+    case 0xB000: snprintf(buf, sizeof(buf), "JP V0, 0x%03X", nnn); return buf;
+    case 0xC000: snprintf(buf, sizeof(buf), "RND V%X, 0x%02X", x, nn); return buf;
+    case 0xD000: snprintf(buf, sizeof(buf), "DRW V%X, V%X, 0x%X", x, y, n); return buf;
+
+    case 0xE000:
+        switch (nn)
+        {
+        case 0x9E: snprintf(buf, sizeof(buf), "SKP V%X", x); break;
+        case 0xA1: snprintf(buf, sizeof(buf), "SKNP V%X", x); break;
+        default: snprintf(buf, sizeof(buf), "UNKNOWN 0x%04X", op); break;
+        }
+        return buf;
+
+    case 0xF000:
+        switch (nn)
+        {
+        case 0x07: snprintf(buf, sizeof(buf), "LD V%X, DT", x); break;
+        case 0x0A: snprintf(buf, sizeof(buf), "LD V%X, K", x); break;
+        case 0x15: snprintf(buf, sizeof(buf), "LD DT, V%X", x); break;
+        case 0x18: snprintf(buf, sizeof(buf), "LD ST, V%X", x); break;
+        case 0x1E: snprintf(buf, sizeof(buf), "ADD I, V%X", x); break;
+        case 0x29: snprintf(buf, sizeof(buf), "LD F, V%X", x); break;
+        case 0x33: snprintf(buf, sizeof(buf), "LD B, V%X", x); break;
+        case 0x55: snprintf(buf, sizeof(buf), "LD [I], V0..V%X", x); break;
+        case 0x65: snprintf(buf, sizeof(buf), "LD V0..V%X, [I]", x); break;
+        default: snprintf(buf, sizeof(buf), "UNKNOWN 0x%04X", op); break;
+        }
+        return buf;
+    }
+
+    snprintf(buf, sizeof(buf), "UNKNOWN 0x%04X", op);
+    return buf;
 }
 
 void Chip8::OP_0NNN()

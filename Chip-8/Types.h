@@ -10,4 +10,4 @@ using i16 = int16_t;
 using i32 = int32_t;
 
 using f32 = float;
-using f54 = double;
+using f64 = double;

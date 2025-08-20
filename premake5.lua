@@ -7,6 +7,7 @@ workspace "Chip8"
 	group "Libs"
 		include "Vendor/glfw/premake5.lua"
 		include "Vendor/glad/premake5.lua"
+		include "Vendor/imgui/premake5.lua"
 	
 	group "Chip-8"
 		include "Chip-8/premake5.lua"

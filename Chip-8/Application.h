@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Window.h"
-#include "Chip8.h"
-#include "Shader.h"
-#include "Texture.h"
+class Window;
+class Texture;
+class Chip8;
+class DebugWindow;
 
 class Application
 {
@@ -21,7 +21,6 @@ private:
 private:
     Window* _window = nullptr;
     Chip8* _chip = nullptr;
-    Shader* _screen = nullptr;
     Texture* _screenTexture = nullptr;
+    DebugWindow* _debugWindow = nullptr;
 };
-

@@ -25,6 +25,24 @@ public:
     void KeyDown(u8 hex) { if (hex < 16) _key[hex] = 1; }
     void KeyUp(u8 hex) { if (hex < 16) _key[hex] = 0; }
 
+    bool IsKeyDown(u8 hex) { return _key[hex] == 1; }
+
+    u8 GetDelayTimer() const { return _delayTimer; }
+    u8 GetSoundTimer() const { return _soundTimer; }
+    u8 GetVRegister(u8 reg) const { return _registers[reg]; }
+
+    u16 GetIndex() const { return _index; }
+    u16 GetPC() const { return _pc; }
+    u16 GetSP() const { return _sp; }
+    u16 PeekOpcode(u16 addr) const { if (addr >= _memory.size() - 1) return 0; return _memory[addr] << 8 | _memory[addr + 1]; }
+
+    size_t GetMemorySize() const { return _memory.size(); }
+
+    const u8* GetMemory() const { return _memory.data(); }
+    const u16* GetStack() const { return _stack.data(); }
+
+    std::string Disassemble(u16 addr) const;
+
 private:
     void Init();
     void Fetch();
@@ -53,7 +71,8 @@ private:
 
     u16 _addr; // Lowest 12 bits
     u8 _byte; // Lowest 8 bits
-    u16 _nibble; // Highest 4 bits
+    u16 _hNibble; // Highest 4 bits
+    u16 _lNibble; // Lowest 4 bits
     u8 _x; // Lower 4 bits of high byte
     u8 _y; // Upper 4 bits of low byte
 

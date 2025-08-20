@@ -4,7 +4,6 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
 
 class Window
 {
@@ -19,6 +18,10 @@ public:
 
     void* GetUserPtr() const { return glfwGetWindowUserPointer(_window); }
     void SetUserPtr(void* p) { glfwSetWindowUserPointer(_window, p); }
+
+    GLFWwindow* GetHandle() { return _window; }
+    i32 GetWidth() const { return _width; }
+    i32 GetHeight() const { return _height; }
 
 private:
     void Init();
