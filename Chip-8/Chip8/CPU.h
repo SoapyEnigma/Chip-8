@@ -4,65 +4,28 @@
 
 #include <array>
 #include <random>
-#include <string_view>
 #include <vector>
 
-constexpr auto START_ADDRESS = 0x200;
-constexpr auto FONTSET_START_ADDRESS = 0x50;
-constexpr auto WIDTH = 64;
-constexpr auto HEIGHT = 32;
-
-class Chip8
+class CPU
 {
 public:
-    Chip8();
-
-    void Cycle();
-    void LoadROM(std::string_view filePath);
-    void Reset();
-    u32* GetPixelData() { return _screen.data(); }
-
-    void KeyDown(u8 hex) { if (hex < 16) _key[hex] = 1; }
-    void KeyUp(u8 hex) { if (hex < 16) _key[hex] = 0; }
-
-    bool IsKeyDown(u8 hex) { return _key[hex] == 1; }
-
-    u8 GetDelayTimer() const { return _delayTimer; }
-    u8 GetSoundTimer() const { return _soundTimer; }
-    u8 GetVRegister(u8 reg) const { return _registers[reg]; }
-
-    u16 GetIndex() const { return _index; }
-    u16 GetPC() const { return _pc; }
-    u16 GetSP() const { return _sp; }
-    u16 PeekOpcode(u16 addr) const { if (addr >= _memory.size() - 1) return 0; return _memory[addr] << 8 | _memory[addr + 1]; }
-
-    size_t GetMemorySize() const { return _memory.size(); }
-
-    const u8* GetMemory() const { return _memory.data(); }
-    const u16* GetStack() const { return _stack.data(); }
-
-    std::string Disassemble(u16 addr) const;
-
-private:
-    void Init();
     void Fetch();
     void Decode();
     void Execute();
     void UpdateTimers();
 
-    // Helper
-    template <typename T, size_t S>
-    void Clear(std::array<T, S>& arr) { std::fill(std::begin(arr), std::end(arr), 0); }
+    void Reset(std::vector<char> rom, size_t romSize);
+
+    std::string Disassemble(u16 addr) const;
 
 private:
-    std::vector<char> _currentRom;
-    size_t _currRomSize;
+    u16 START_ADDRESS = 0x200;
+    std::array<u8, 4096> _memory{};
+    std::array<u8, 16> _registers{};
+    std::array<u8, 16> _key{};
+    std::array<u16, 16> _stack{};
 
-    std::array<u8, 4096> _memory;
-    std::array<u8, 16> _registers;
-    std::array<u8, 16> _key;
-    std::array<u16, 16> _stack;
-    std::array<u32, WIDTH * HEIGHT> _screen;
+    std::array<u32, 64 * 32> _screen{};
 
     u16 _opcode;
     u16 _index;
@@ -79,9 +42,10 @@ private:
     u8 _delayTimer;
     u8 _soundTimer;
 
-    std::mt19937 _engine{ std::random_device{}()};
+    std::mt19937 _engine{ std::random_device{}() };
     std::uniform_int_distribution<u16> _dist{ 0, 255 };
 
+    u16 FONTSET_START_ADDRESS = 0x50;
     u8 _fontset[80] =
     {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -102,8 +66,45 @@ private:
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
 
+public:
+    const u32* GetPixelData() const { return _screen.data(); }
+
+    void KeyDown(u8 hex) { if (hex < 16) _key[hex] = 1; }
+    void KeyUp(u8 hex) { if (hex < 16) _key[hex] = 0; }
+    const bool IsKeyDown(u8 hex) const { return _key[hex] == 1; }
+
+    const u8 GetDelayTimer() const { return _delayTimer; }
+    void SetDelayTimer(u8 timer) { _delayTimer = timer; }
+    void DecrementDelayTimer() { _delayTimer--; }
+
+    const u8 GetSoundTimer() const { return _soundTimer; }
+    void SetSoundTimer(u8 timer) { _soundTimer = timer; }
+    void DecrementSoundTimer() { _soundTimer--; }
+
+    const u16 PeekOpcode(u16 addr) const { if (addr >= _memory.size() - 1) return 0; return _memory[addr] << 8 | _memory[addr + 1]; }
+    const u16 GetOpcode() const { return _opcode; }
+    void SetOpcode(u16 opcode) { _opcode = opcode; }
+
+    const u16 GetStartAddress() const { return START_ADDRESS; }
+    const size_t GetMemorySize() const { return _memory.size(); }
+    const u8* GetMemory() const { return _memory.data(); }
+    const std::array<u8, 4096>& GetMemoryArray() const { return _memory; }
+
+    const u16 GetPC() const { return _pc; }
+    void SetPC(u16 pc) { _pc = pc; }
+
+    const u16* GetStack() const { return _stack.data(); }
+    const u16 GetSP() const { return _sp; }
+
+    const u8 GetVRegister(u8 reg) const { return _registers[reg]; }
+    const u16 GetIndex() const { return _index; }
+
+    // Util Helper
+    template <typename T, size_t S>
+    void Clear(std::array<T, S>& arr) { std::fill(std::begin(arr), std::end(arr), 0); }
+
 private:
-    //Opcodes:
+    //Instructions:
     void OP_0NNN();
     void OP_00E0();
     void OP_00EE();

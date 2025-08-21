@@ -15,6 +15,12 @@ project "Chip8"
 		"%{wks.location}/Vendor/glfw/include",
         "%{wks.location}/Vendor/glad/include",
 		"%{wks.location}/Vendor/imgui",
+		
+		"Chip8",
+		"Entry",
+		"UI",
+		"Util",
+		"Window"
     }
 	
 	libdirs { libout } 
@@ -25,6 +31,15 @@ project "Chip8"
 		"glad",
 		"glfw",
 		"imgui"
+	}
+	
+	vpaths
+	{
+		["Chip8"] = { "Chip8/**.h", "Chip8/**.cpp" },
+		["UI"] = { "UI/**.h", "UI/**.cpp" },
+		["Window"] = { "Window/**.h", "Window/**.cpp" },
+		["Util"] = { "Util/**.h", "Util/**.cpp" },
+		["Entry"] = { "Entry/**.h", "Entry/**.cpp" }
 	}
 	
 	filter "configurations:Debug"

@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Types.h"
+
+#include <algorithm>
+
 class Window;
 class Texture;
 class Chip8;

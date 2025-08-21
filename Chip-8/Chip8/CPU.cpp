@@ -1,47 +1,106 @@
-#include "Chip8.h"
+#include "CPU.h"
 
-#include <filesystem>
-#include <fstream>
+#include <cstdio>
 
-Chip8::Chip8()
+void CPU::Fetch()
 {
-    Init();
+    _opcode = (_memory[_pc] << 8) | _memory[_pc + 1];
+    _pc += 2;
 }
 
-void Chip8::Cycle()
+void CPU::Decode()
 {
-    Fetch();
-
-    Decode();
-
-    Execute();
-
-    UpdateTimers();
+    _addr = _opcode & 0x0FFF;
+    _byte = _opcode & 0x00FF;
+    _hNibble = _opcode & 0xF000;
+    _lNibble = _opcode & 0x000F;
+    _x = (_opcode & 0x0F00) >> 8;
+    _y = (_opcode & 0x00F0) >> 4;
 }
 
-void Chip8::LoadROM(std::string_view filePath)
+void CPU::Execute()
 {
-    std::ifstream file(filePath.data(), std::ios::binary | std::ios::ate);
-
-    if (!file)
-        return; // Fails
-
-    const std::streamsize size = file.tellg();
-    if (size <= 0)
-        return; // Fails
-    if (START_ADDRESS + static_cast<size_t>(size) > _memory.size())
-        return; // Fails
-
-    _currentRom.resize(size);
-    _currRomSize = size;
-
-    file.seekg(0, std::ios::beg);
-    file.read(_currentRom.data(), size);
-
-    std::copy(_currentRom.begin(), _currentRom.end(), _memory.begin() + START_ADDRESS);
+    switch (_hNibble)
+    {
+    case 0x0000:
+    {
+        switch (_byte)
+        {
+        case 0x0E0: OP_00E0(); break;
+        case 0x0EE: OP_00EE(); break;
+        default: OP_0NNN(); break;
+        }
+    } break;
+    case 0x1000: OP_1NNN(); break;
+    case 0x2000: OP_2NNN(); break;
+    case 0x3000: OP_3XNN(); break;
+    case 0x4000: OP_4XNN(); break;
+    case 0x5000: OP_5XY0(); break;
+    case 0x6000: OP_6XNN(); break;
+    case 0x7000: OP_7XNN(); break;
+    case 0x8000:
+    {
+        switch (_lNibble)
+        {
+        case 0x0: OP_8XY0(); break;
+        case 0x1: OP_8XY1(); break;
+        case 0x2: OP_8XY2(); break;
+        case 0x3: OP_8XY3(); break;
+        case 0x4: OP_8XY4(); break;
+        case 0x5: OP_8XY5(); break;
+        case 0x6: OP_8XY6(); break;
+        case 0x7: OP_8XY7(); break;
+        case 0xE: OP_8XYE(); break;
+        default: printf("Unknown 8XY?: 0x%04X\n", _opcode); break;
+        }
+    } break;
+    case 0x9000: OP_9XY0(); break;
+    case 0xA000: OP_ANNN(); break;
+    case 0xB000: OP_BNNN(); break;
+    case 0xC000: OP_CXNN(); break;
+    case 0xD000: OP_DXYN(); break;
+    case 0xE000:
+    {
+        switch (_byte)
+        {
+        case 0x009E: OP_EX9E(); break;
+        case 0x00A1: OP_EXA1(); break;
+        default: printf("Unknown EX??: 0x%04X\n", _opcode); break;
+        }
+    } break;
+    case 0xF000:
+    {
+        switch (_byte)
+        {
+        case 0x0007: OP_FX07(); break;
+        case 0x000A: OP_FX0A(); break;
+        case 0x0015: OP_FX15(); break;
+        case 0x0018: OP_FX18(); break;
+        case 0x001E: OP_FX1E(); break;
+        case 0x0029: OP_FX29(); break;
+        case 0x0033: OP_FX33(); break;
+        case 0x0055: OP_FX55(); break;
+        case 0x0065: OP_FX65(); break;
+        default: printf("Unknown FX??: 0x%04X\n", _opcode); break;
+        }
+    } break;
+    default: printf("Unknown opcode: 0x%04X\n", _opcode); break;
+    }
 }
 
-void Chip8::Reset()
+void CPU::UpdateTimers()
+{
+    if (_delayTimer > 0)
+        _delayTimer--;
+
+    if (_soundTimer > 0)
+    {
+        _beep(440, 100);
+        _soundTimer--;
+    }
+}
+
+void CPU::Reset(std::vector<char> rom, size_t romSize)
 {
     _pc = START_ADDRESS;
     _opcode = 0;
@@ -67,114 +126,11 @@ void Chip8::Reset()
         _memory[FONTSET_START_ADDRESS + i] = _fontset[i];
 
     // Reload ROM
-    if (_currRomSize)
-        std::copy(_currentRom.begin(), _currentRom.end(), _memory.begin() + START_ADDRESS);
+    if (romSize)
+        std::copy(rom.begin(), rom.end(), _memory.begin() + START_ADDRESS);
 }
 
-void Chip8::Init()
-{
-    Reset();
-}
-
-void Chip8::Fetch()
-{
-    _opcode = (_memory[_pc] << 8) | _memory[_pc + 1];
-    _pc += 2;
-}
-
-void Chip8::Decode()
-{
-    _addr = _opcode & 0x0FFF;
-    _byte = _opcode & 0x00FF;
-    _hNibble = _opcode & 0xF000;
-    _lNibble = _opcode & 0x000F;
-    _x = (_opcode & 0x0F00) >> 8;
-    _y = (_opcode & 0x00F0) >> 4;
-}
-
-void Chip8::Execute()
-{
-    switch (_hNibble)
-    {
-        case 0x0000:
-        {
-            switch (_byte)
-            {
-                case 0x0E0: OP_00E0(); break;
-                case 0x0EE: OP_00EE(); break;
-                default: OP_0NNN(); break;
-            }
-        } break;
-        case 0x1000: OP_1NNN(); break;
-        case 0x2000: OP_2NNN(); break;
-        case 0x3000: OP_3XNN(); break;
-        case 0x4000: OP_4XNN(); break;
-        case 0x5000: OP_5XY0(); break;
-        case 0x6000: OP_6XNN(); break;
-        case 0x7000: OP_7XNN(); break;
-        case 0x8000:
-        {
-            switch (_lNibble)
-            {
-                case 0x0: OP_8XY0(); break;
-                case 0x1: OP_8XY1(); break;
-                case 0x2: OP_8XY2(); break;
-                case 0x3: OP_8XY3(); break;
-                case 0x4: OP_8XY4(); break;
-                case 0x5: OP_8XY5(); break;
-                case 0x6: OP_8XY6(); break;
-                case 0x7: OP_8XY7(); break;
-                case 0xE: OP_8XYE(); break;
-                default: printf("Unknown 8XY?: 0x%04X\n", _opcode); break;
-            }
-        } break;
-        case 0x9000: OP_9XY0(); break;
-        case 0xA000: OP_ANNN(); break;
-        case 0xB000: OP_BNNN(); break;
-        case 0xC000: OP_CXNN(); break;
-        case 0xD000: OP_DXYN(); break;
-        case 0xE000:
-        {
-            switch (_byte)
-            {
-                case 0x009E: OP_EX9E(); break;
-                case 0x00A1: OP_EXA1(); break;
-                default: printf("Unknown EX??: 0x%04X\n", _opcode); break;
-            }
-        } break;
-        case 0xF000:
-        {
-            switch (_byte)
-            {
-                case 0x0007: OP_FX07(); break;
-                case 0x000A: OP_FX0A(); break;
-                case 0x0015: OP_FX15(); break;
-                case 0x0018: OP_FX18(); break;
-                case 0x001E: OP_FX1E(); break;
-                case 0x0029: OP_FX29(); break;
-                case 0x0033: OP_FX33(); break;
-                case 0x0055: OP_FX55(); break;
-                case 0x0065: OP_FX65(); break;
-                default: printf("Unknown FX??: 0x%04X\n", _opcode); break;
-            }
-        } break;
-        default: printf("Unknown opcode: 0x%04X\n", _opcode); break;
-    }
-}
-
-void Chip8::UpdateTimers()
-{
-    if (_delayTimer > 0)
-        _delayTimer--;
-
-    if (_soundTimer > 0)
-    {
-        _beep(440, 100);
-        _soundTimer--;
-    }
-}
-
-std::string Chip8::Disassemble(u16 addr) const
+std::string CPU::Disassemble(u16 addr) const
 {
     const u16 op = PeekOpcode(addr);
     const u16 nnn = op & 0x0FFF;
@@ -211,9 +167,9 @@ std::string Chip8::Disassemble(u16 addr) const
         case 0x3: snprintf(buf, sizeof(buf), "XOR V%X, V%X", x, y); break;
         case 0x4: snprintf(buf, sizeof(buf), "ADD V%X, V%X", x, y); break;
         case 0x5: snprintf(buf, sizeof(buf), "SUB V%X, V%X", x, y); break;
-        case 0x6: snprintf(buf, sizeof(buf), "SHR V%X {,V%X}", x, y); break; // interpreter variant
+        case 0x6: snprintf(buf, sizeof(buf), "SHR V%X {,V%X}", x, y); break;
         case 0x7: snprintf(buf, sizeof(buf), "SUBN V%X, V%X", x, y); break;
-        case 0xE: snprintf(buf, sizeof(buf), "SHL V%X {,V%X}", x, y); break; // interpreter variant
+        case 0xE: snprintf(buf, sizeof(buf), "SHL V%X {,V%X}", x, y); break;
         default:  snprintf(buf, sizeof(buf), "UNKNOWN 0x%04X", op);  break;
         }
         return buf;
@@ -254,83 +210,83 @@ std::string Chip8::Disassemble(u16 addr) const
     return buf;
 }
 
-void Chip8::OP_0NNN()
+void CPU::OP_0NNN()
 {
     /*NOP*/
 }
 
-void Chip8::OP_00E0()
+void CPU::OP_00E0()
 {
     Clear(_screen);
 }
 
-void Chip8::OP_00EE()
+void CPU::OP_00EE()
 {
     _sp--;
     _pc = _stack[_sp];
 }
 
-void Chip8::OP_1NNN()
+void CPU::OP_1NNN()
 {
     _pc = _addr;
 }
 
-void Chip8::OP_2NNN()
+void CPU::OP_2NNN()
 {
     _stack[_sp] = _pc;
     _sp++;
     _pc = _addr;
 }
 
-void Chip8::OP_3XNN()
+void CPU::OP_3XNN()
 {
     if (_registers[_x] == _byte)
         _pc += 2;
 }
 
-void Chip8::OP_4XNN()
+void CPU::OP_4XNN()
 {
     if (_registers[_x] != _byte)
         _pc += 2;
 }
 
-void Chip8::OP_5XY0()
+void CPU::OP_5XY0()
 {
     if (_registers[_x] == _registers[_y])
         _pc += 2;
 }
 
-void Chip8::OP_6XNN()
+void CPU::OP_6XNN()
 {
     _registers[_x] = _byte;
 }
 
-void Chip8::OP_7XNN()
+void CPU::OP_7XNN()
 {
     _registers[_x] += _byte;
 }
 
-void Chip8::OP_8XY0()
+void CPU::OP_8XY0()
 {
     _registers[_x] = _registers[_y];
 }
 
-void Chip8::OP_8XY1()
+void CPU::OP_8XY1()
 {
     _registers[_x] |= _registers[_y];
 }
 
-void Chip8::OP_8XY2()
+void CPU::OP_8XY2()
 {
     _registers[_x] &= _registers[_y];
 }
 
-void Chip8::OP_8XY3()
+void CPU::OP_8XY3()
 {
     _registers[_x] ^= _registers[_y];
 }
 
-void Chip8::OP_8XY4()
+void CPU::OP_8XY4()
 {
     u16 sum = _registers[_x] + _registers[_y];
 
@@ -339,61 +295,61 @@ void Chip8::OP_8XY4()
     _registers[_x] = sum & 0xFF;
 }
 
-void Chip8::OP_8XY5()
+void CPU::OP_8XY5()
 {
     _registers[0xF] = _registers[_x] > _registers[_y] ? 1 : 0;
 
     _registers[_x] -= _registers[_y];
 }
 
-void Chip8::OP_8XY6()
+void CPU::OP_8XY6()
 {
     _registers[0xF] = _registers[_x] & 0x1;
 
     _registers[_x] >>= 1;
 }
 
-void Chip8::OP_8XY7()
+void CPU::OP_8XY7()
 {
     _registers[0xF] = _registers[_y] > _registers[_x] ? 1 : 0;
 
     _registers[_x] = _registers[_y] - _registers[_x];
 }
 
-void Chip8::OP_8XYE()
+void CPU::OP_8XYE()
 {
     _registers[0xF] = (_registers[_x] & 0x80) >> 7;
 
     _registers[_x] <<= 1;
 }
 
-void Chip8::OP_9XY0()
+void CPU::OP_9XY0()
 {
     if (_registers[_x] != _registers[_y])
         _pc += 2;
 }
 
-void Chip8::OP_ANNN()
+void CPU::OP_ANNN()
 {
     _index = _addr;
 }
 
-void Chip8::OP_BNNN()
+void CPU::OP_BNNN()
 {
     _pc = _registers[0] + _addr;
 }
 
-void Chip8::OP_CXNN()
+void CPU::OP_CXNN()
 {
     _registers[_x] = _dist(_engine) & _byte;
 }
 
-void Chip8::OP_DXYN()
+void CPU::OP_DXYN()
 {
     u8 height = _opcode & 0x000F;
 
-    u8 xPos = _registers[_x] % WIDTH;
-    u8 yPos = _registers[_y] % HEIGHT;
+    u8 xPos = _registers[_x] & 63;
+    u8 yPos = _registers[_y] & 31;
 
     _registers[0xF] = 0;
 
@@ -404,7 +360,12 @@ void Chip8::OP_DXYN()
         for (u32 col = 0; col < 8; col++)
         {
             u8 spritePixel = spriteByte & (0x80 >> col);
-            u32* screenPixel = &_screen[(yPos + row) * WIDTH + (xPos + col)];
+
+            u32 x = (xPos + col) & 63;
+            u32 y = (yPos + row) & 31;
+            u32 i = y * 64 + x;
+
+            u32* screenPixel = &_screen[i];
 
             if (spritePixel)
             {
@@ -417,7 +378,7 @@ void Chip8::OP_DXYN()
     }
 }
 
-void Chip8::OP_EX9E()
+void CPU::OP_EX9E()
 {
     u8 key = _registers[_x];
 
@@ -425,7 +386,7 @@ void Chip8::OP_EX9E()
         _pc += 2;
 }
 
-void Chip8::OP_EXA1()
+void CPU::OP_EXA1()
 {
     u8 key = _registers[_x];
 
@@ -433,12 +394,12 @@ void Chip8::OP_EXA1()
         _pc += 2;
 }
 
-void Chip8::OP_FX07()
+void CPU::OP_FX07()
 {
     _registers[_x] = _delayTimer;
 }
 
-void Chip8::OP_FX0A()
+void CPU::OP_FX0A()
 {
     for (u8 k = 0; k < 16; k++)
     {
@@ -452,28 +413,28 @@ void Chip8::OP_FX0A()
     _pc -= 2;
 }
 
-void Chip8::OP_FX15()
+void CPU::OP_FX15()
 {
     _delayTimer = _registers[_x];
 }
 
-void Chip8::OP_FX18()
+void CPU::OP_FX18()
 {
     _soundTimer = _registers[_x];
 }
 
-void Chip8::OP_FX1E()
+void CPU::OP_FX1E()
 {
     _index += _registers[_x];
 }
 
-void Chip8::OP_FX29()
+void CPU::OP_FX29()
 {
     u8 value = _registers[_x];
     _index = FONTSET_START_ADDRESS + (5 * value);
 }
 
-void Chip8::OP_FX33()
+void CPU::OP_FX33()
 {
     u8 value = _registers[_x];
 
@@ -486,13 +447,13 @@ void Chip8::OP_FX33()
     _memory[_index] = value % 10;
 }
 
-void Chip8::OP_FX55()
+void CPU::OP_FX55()
 {
     for (u8 i = 0; i <= _x; i++)
         _memory[_index + i] = _registers[i];
 }
 
-void Chip8::OP_FX65()
+void CPU::OP_FX65()
 {
     for (u8 i = 0; i <= _x; i++)
         _registers[i] = _memory[_index + i];

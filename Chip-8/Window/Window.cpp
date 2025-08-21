@@ -82,10 +82,10 @@ static void KeyCallback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i
     if (hex == 0xFF)
         return;
 
-    if (action == GLFW_PRESS)
-        chip->KeyDown(hex);
+    if (action == GLFW_PRESS || action == GLFW_REPEAT)
+        chip->GetCPU()->KeyDown(hex);
     else if (action == GLFW_RELEASE)
-        chip->KeyUp(hex);
+        chip->GetCPU()->KeyUp(hex);
 }
 
 

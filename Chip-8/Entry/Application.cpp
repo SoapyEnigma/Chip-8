@@ -40,7 +40,6 @@ void Application::Init()
     _chip = new Chip8();
 
     _window->SetUserPtr(_chip);
-    _chip->LoadROM("./Roms/Clock Program [Bill Fisher, 1981].ch8");
 
     _screenTexture = new Texture();
     _screenTexture->CreateEmpty(64, 32);
@@ -52,7 +51,7 @@ void Application::Update()
 {
     _window->Clear();
     _chip->Cycle();
-    _screenTexture->Update(_chip->GetPixelData());
+    _screenTexture->Update(_chip->GetCPU()->GetPixelData());
 }
 
 void Application::Render()

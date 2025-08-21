@@ -28,6 +28,6 @@ private:
 
 private:
     GLFWwindow* _window = nullptr;
-    i32 _width = 720;
-    i32 _height = 480;
+    i32 _width = 1280;
+    i32 _height = 720;
 };
