@@ -38,3 +38,4 @@
 *.user
 *.sln
 /lib
+Chip-8/imgui.ini
