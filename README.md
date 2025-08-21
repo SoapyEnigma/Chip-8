@@ -3,6 +3,7 @@ Uses:
 - GLFW 3.4
 - GLAD (4.6 Core)
 - ImGui v1.92.2b - Docking
+- [Premake5](https://premake.github.io/) (You'll need to install/download)
 
 Tetris Picture:
 <img width="1282" height="752" alt="{B2DFC962-1861-40D4-89A3-B9FB85BB2187}" src="https://github.com/user-attachments/assets/ca26870d-db6a-40a8-a4d8-8b80d34743c6" />
