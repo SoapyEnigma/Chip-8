@@ -126,8 +126,8 @@ void DebugWindow::EmuSpace(Texture* texture)
 {
     if (ImGui::Begin("##Emu"))
     {
-        const f32 texW = 64.0f;
-        const f32 texH = 32.0f;
+        const f32 texW = _chip->GetCPU()->GetWidth();
+        const f32 texH = _chip->GetCPU()->GetHeight();
 
         ImVec2 avail = ImGui::GetContentRegionAvail();
 
@@ -491,7 +491,7 @@ void DebugWindow::ToolBar()
 
     i32 cpf = _chip->GetCyclesPerFrame();
     ImGui::SetNextItemWidth(160);
-    if (ImGui::SliderInt("Cycles/frame", &cpf, 1, 2000))
+    if (ImGui::SliderInt("Cycles/frame", &cpf, 1, 500))
         _chip->SetCyclesPerFrame(cpf);
 
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))

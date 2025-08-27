@@ -20,8 +20,8 @@ public:
     void SetUserPtr(void* p) { glfwSetWindowUserPointer(_window, p); }
 
     GLFWwindow* GetHandle() { return _window; }
-    i32 GetWidth() const { return _width; }
-    i32 GetHeight() const { return _height; }
+    const i32 GetWidth() const { return _width; }
+    const i32 GetHeight() const { return _height; }
 
 private:
     void Init();

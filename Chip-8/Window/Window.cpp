@@ -72,7 +72,7 @@ static void KeyCallback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i
     if (!chip)
         return;
 
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
     {
         chip->Reset();
         return;
@@ -82,7 +82,7 @@ static void KeyCallback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i
     if (hex == 0xFF)
         return;
 
-    if (action == GLFW_PRESS || action == GLFW_REPEAT)
+    if (action == GLFW_PRESS)
         chip->GetCPU()->KeyDown(hex);
     else if (action == GLFW_RELEASE)
         chip->GetCPU()->KeyUp(hex);

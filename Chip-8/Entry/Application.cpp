@@ -51,6 +51,10 @@ void Application::Update()
 {
     _window->Clear();
     _chip->Cycle();
+
+    if (_chip->GetCPU()->GetWidth() != _screenTexture->GetWidth())
+        _screenTexture->CreateEmpty(_chip->GetCPU()->GetWidth(), _chip->GetCPU()->GetHeight());
+
     _screenTexture->Update(_chip->GetCPU()->GetPixelData());
 }
 

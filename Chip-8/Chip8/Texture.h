@@ -54,7 +54,9 @@ public:
         glBindTexture(GL_TEXTURE_2D, _id);
     }
 
-    u32 ID() const { return _id; }
+    const u32 ID() const { return _id; }
+
+    const i32 GetWidth() const { return _w; }
 
 private:
     u32 _id;

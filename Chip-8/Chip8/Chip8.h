@@ -8,6 +8,7 @@ class Chip8
 {
 public:
     Chip8();
+    ~Chip8() { delete _cpu; _cpu = nullptr; }
 
     void Cycle();
     void LoadROM(std::string_view filePath);
@@ -20,10 +21,10 @@ public:
 
     void SetPaused(bool p) { _paused = p; }
     void TogglePaused() { _paused = !_paused; }
-    bool IsPaused() const { return _paused; }
+    const bool IsPaused() const { return _paused; }
     void StepOnce() { _doStep = true; }
     void SetCyclesPerFrame(i32 n) { _cyclesPerFrame = std::max(1, n); }
-    int  GetCyclesPerFrame() const { return _cyclesPerFrame; }
+    i32  GetCyclesPerFrame() const { return _cyclesPerFrame; }
 
 private:
     void Init();
@@ -36,5 +37,5 @@ private:
 
     bool _paused = true;
     bool _doStep = false;
-    int  _cyclesPerFrame = 10;
+    i32  _cyclesPerFrame = 10;
 };
