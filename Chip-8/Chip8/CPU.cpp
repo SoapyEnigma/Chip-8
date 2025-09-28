@@ -118,8 +118,6 @@ void CPU::UpdateTimers()
 
 void CPU::Reset(std::vector<char> rom, size_t romSize)
 {
-    _audio.Shutdown();
-    _audio.Init();
     _pc = START_ADDRESS;
     _opcode = 0;
     _index = 0;
@@ -495,7 +493,7 @@ void CPU::OP_DXYN()
     const u32 h = GetHeight();
 
     _registers[0xF] = 0;
-    auto buff = _isHiRes ? _hiRes.data() : _lowRes.data();
+    auto* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
 
     u8 xPos = _registers[_x] % w;
     u8 yPos = _registers[_y] % h;

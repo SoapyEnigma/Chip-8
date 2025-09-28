@@ -133,18 +133,18 @@ void DebugWindow::EmuSpace(Texture* texture)
 
         f32 sx = avail.x / texW;
         f32 sy = avail.y / texH;
-        f32 scale = std::min(sx, sy);
+        f32 scale = (std::min)(sx, sy);
 
         f32 intScale = std::floor(scale);
         if (intScale >= 1.0f)
             scale = intScale;
         else
-            scale = std::max(0.0f, scale);
+            scale = (std::max)(0.0f, scale);
 
         ImVec2 imgSize = ImVec2(texW * scale, texH * scale);
 
         ImVec2 cursor = ImGui::GetCursorPos();
-        ImVec2 offset = ImVec2{ std::max(0.0f, (avail.x - imgSize.x) * 0.5f), std::max(0.0f, (avail.y - imgSize.y) * 0.5f) };
+        ImVec2 offset = ImVec2{ (std::max)(0.0f, (avail.x - imgSize.x) * 0.5f), (std::max)(0.0f, (avail.y - imgSize.y) * 0.5f) };
 
         ImGui::SetCursorPos(ImVec2{ std::floor(cursor.x + offset.x), std::floor(cursor.y + offset.y) });
 

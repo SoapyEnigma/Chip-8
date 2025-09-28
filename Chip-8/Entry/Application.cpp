@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "Chip8.h"
 #include "DebugWindow.h"
+#include "InputManager.h"
 
 Application::Application()
 {
@@ -37,9 +38,11 @@ void Application::Run()
 void Application::Init()
 {
     _window = new Window();
-    _chip = new Chip8();
 
-    _window->SetUserPtr(_chip);
+    _inputManager = new InputManager();
+    _inputManager->AttachToWindow(_window->GetHandle());
+
+    _chip = new Chip8(_inputManager);
 
     _screenTexture = new Texture();
     _screenTexture->CreateEmpty(64, 32);
@@ -50,16 +53,34 @@ void Application::Init()
 void Application::Update()
 {
     _window->Clear();
-    _chip->Cycle();
 
-    if (_chip->GetCPU()->GetWidth() != _screenTexture->GetWidth())
-        _screenTexture->CreateEmpty(_chip->GetCPU()->GetWidth(), _chip->GetCPU()->GetHeight());
+    _inputManager->Update();
 
-    _screenTexture->Update(_chip->GetCPU()->GetPixelData());
+    HandleInput();
+
+    _chip->Cycle(_screenTexture);
 }
 
 void Application::Render()
 {
     _debugWindow->Render(_screenTexture);
     _window->Render();
+}
+
+void Application::HandleInput()
+{
+    for (i32 i = 0; i < 16; i++) // Chip 8 Specific
+    {
+        auto key = static_cast<EmulatorKey>(static_cast<i32>(EmulatorKey::Chip8_0) + i);
+        if (_inputManager->IsKeyDown(key))
+            _chip->GetCPU()->KeyDown(i);
+        else
+            _chip->GetCPU()->KeyUp(i);
+    }
+
+    if (_inputManager->IsSpecialKeyPressed(SpecialKey::ENTER))
+        _chip->Reset();
+
+    if (_inputManager->IsSpecialKeyPressed(SpecialKey::ESCAPE))
+        glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
 }

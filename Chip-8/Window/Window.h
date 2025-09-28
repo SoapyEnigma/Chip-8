@@ -16,9 +16,6 @@ public:
 
     bool ShouldClose() { return glfwWindowShouldClose(_window); }
 
-    void* GetUserPtr() const { return glfwGetWindowUserPointer(_window); }
-    void SetUserPtr(void* p) { glfwSetWindowUserPointer(_window, p); }
-
     GLFWwindow* GetHandle() { return _window; }
     const i32 GetWidth() const { return _width; }
     const i32 GetHeight() const { return _height; }

@@ -2,12 +2,11 @@
 
 #include "Types.h"
 
-#include <algorithm>
-
 class Window;
 class Texture;
 class Chip8;
 class DebugWindow;
+class InputManager;
 
 class Application
 {
@@ -21,10 +20,12 @@ private:
     void Init();
     void Update();
     void Render();
+    void HandleInput();
 
 private:
     Window* _window = nullptr;
     Chip8* _chip = nullptr;
     Texture* _screenTexture = nullptr;
     DebugWindow* _debugWindow = nullptr;
+    InputManager* _inputManager = nullptr;
 };
