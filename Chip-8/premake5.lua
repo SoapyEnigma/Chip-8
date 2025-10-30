@@ -16,9 +16,6 @@ project "Chip8"
         "%{wks.location}/Vendor/imgui",
 
         "%{wks.location}/Engine",
-
-        --"Chip8",
-        --"Application",
     }
 
     links
