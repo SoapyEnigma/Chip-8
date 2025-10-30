@@ -1,5 +1,8 @@
 #include "InputManager.h"
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 void InputManager::AttachToWindow(GLFWwindow* window)
 {
     _window = window;

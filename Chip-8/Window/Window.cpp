@@ -1,8 +1,8 @@
 #include "Window.h"
 
-#include "Chip8.h"
-
 #include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 Window::Window()
 {
@@ -26,6 +26,11 @@ void Window::Render()
 {
     glfwSwapBuffers(_window);
     glfwPollEvents();
+}
+
+bool Window::ShouldClose()
+{
+    return glfwWindowShouldClose(_window);
 }
 
 void Window::Init()

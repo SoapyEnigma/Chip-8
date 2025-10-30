@@ -2,9 +2,6 @@
 
 #include "Types.h"
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <unordered_map>
 #include <unordered_set>
 
@@ -26,6 +23,7 @@ enum class EmulatorKey : u16
     NES_Up, NES_Down, NES_Left, NES_Right,
 };
 
+struct GLFWwindow;
 class InputManager
 {
 public:

@@ -2,8 +2,7 @@
 
 #include "Types.h"
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 class Window
 {
@@ -14,7 +13,7 @@ public:
     void Clear();
     void Render();
 
-    bool ShouldClose() { return glfwWindowShouldClose(_window); }
+    bool ShouldClose();
 
     GLFWwindow* GetHandle() { return _window; }
     const i32 GetWidth() const { return _width; }
