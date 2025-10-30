@@ -3,19 +3,19 @@ project "Chip8"
     cppdialect "c++20"
     staticruntime "on"
     targetdir ("%{wks.location}/bin/%{cfg.buildcfg}")
-    objdir ("%{wks.location}/bin-int/%{cfg.buildcfg}/%{prj.name}")
-    
+    objdir ("%{wks.location}/bin-int/%{cfg.buildcfg}")
+
     dependson { "glad", "glfw", "imgui", "miniaudio" }
-    
+
     files { "**.h", "**.cpp" }
-    
+
     includedirs
     {
         "%{wks.location}/Vendor/glfw/include",
         "%{wks.location}/Vendor/glad/include",
         "%{wks.location}/Vendor/imgui",
         "%{wks.location}/Vendor/miniaudio",
-        
+
         "Chip8",
         "Entry",
         "UI",
@@ -24,9 +24,7 @@ project "Chip8"
         "Audio",
         "Input"
     }
-    
-    libdirs { libout } 
-    
+
     links
     {
         "opengl32",
@@ -35,7 +33,7 @@ project "Chip8"
         "imgui",
         "miniaudio"
     }
-    
+
     vpaths
     {
         ["Chip8"] = { "Chip8/**.h", "Chip8/**.cpp" },
@@ -46,7 +44,7 @@ project "Chip8"
         ["Audio"] = { "Audio/**.h", "Audio/**.cpp" },
         ["Input"] = { "Input/**.h", "Input/**.cpp" }
     }
-    
+
     filter "configurations:Debug"
         kind "ConsoleApp"
         defines { "DEBUG" }

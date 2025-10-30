@@ -1,4 +1,4 @@
-libout = "%{wks.location}/lib/%{cfg.buildcfg}"
+--libout = "%{wks.location}/lib/%{cfg.buildcfg}"
     
 workspace "Chip8"
     architecture "x86_64"
