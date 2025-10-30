@@ -1,11 +1,9 @@
 #include "Chip8.h"
 
 #include <Engine/Input/InputManager.h>
+#include <Engine/Input/Keys.h>
 #include <Engine/Renderer/Texture.h>
 #include <Engine/Util/Types.h>
-
-#define GLFW_INCLUDE_NONE
-#include <Vendor/glfw/include/GLFW/glfw3.h>
 
 #include <filesystem>
 #include <fstream>
@@ -91,23 +89,23 @@ void Chip8::UpdateScreen(Texture* texture)
 
 void Chip8::SetupKeyBindings(InputManager* input)
 {
-    input->BindKey(GLFW_KEY_X, EmulatorKey::Chip8_0);
-    input->BindKey(GLFW_KEY_1, EmulatorKey::Chip8_1);
-    input->BindKey(GLFW_KEY_2, EmulatorKey::Chip8_2);
-    input->BindKey(GLFW_KEY_3, EmulatorKey::Chip8_3);
+    input->BindKey(Key::KeyCode::KEY_X, EmulatorKey::Chip8_0);
+    input->BindKey(Key::KeyCode::KEY_1, EmulatorKey::Chip8_1);
+    input->BindKey(Key::KeyCode::KEY_2, EmulatorKey::Chip8_2);
+    input->BindKey(Key::KeyCode::KEY_3, EmulatorKey::Chip8_3);
 
-    input->BindKey(GLFW_KEY_Q, EmulatorKey::Chip8_4);
-    input->BindKey(GLFW_KEY_W, EmulatorKey::Chip8_5);
-    input->BindKey(GLFW_KEY_E, EmulatorKey::Chip8_6);
-    input->BindKey(GLFW_KEY_A, EmulatorKey::Chip8_7);
+    input->BindKey(Key::KeyCode::KEY_Q, EmulatorKey::Chip8_4);
+    input->BindKey(Key::KeyCode::KEY_W, EmulatorKey::Chip8_5);
+    input->BindKey(Key::KeyCode::KEY_E, EmulatorKey::Chip8_6);
+    input->BindKey(Key::KeyCode::KEY_A, EmulatorKey::Chip8_7);
 
-    input->BindKey(GLFW_KEY_S, EmulatorKey::Chip8_8);
-    input->BindKey(GLFW_KEY_D, EmulatorKey::Chip8_9);
-    input->BindKey(GLFW_KEY_Z, EmulatorKey::Chip8_A);
-    input->BindKey(GLFW_KEY_C, EmulatorKey::Chip8_B);
+    input->BindKey(Key::KeyCode::KEY_S, EmulatorKey::Chip8_8);
+    input->BindKey(Key::KeyCode::KEY_D, EmulatorKey::Chip8_9);
+    input->BindKey(Key::KeyCode::KEY_Z, EmulatorKey::Chip8_A);
+    input->BindKey(Key::KeyCode::KEY_C, EmulatorKey::Chip8_B);
 
-    input->BindKey(GLFW_KEY_4, EmulatorKey::Chip8_C);
-    input->BindKey(GLFW_KEY_R, EmulatorKey::Chip8_D);
-    input->BindKey(GLFW_KEY_F, EmulatorKey::Chip8_E);
-    input->BindKey(GLFW_KEY_V, EmulatorKey::Chip8_F);
+    input->BindKey(Key::KeyCode::KEY_4, EmulatorKey::Chip8_C);
+    input->BindKey(Key::KeyCode::KEY_R, EmulatorKey::Chip8_D);
+    input->BindKey(Key::KeyCode::KEY_F, EmulatorKey::Chip8_E);
+    input->BindKey(Key::KeyCode::KEY_V, EmulatorKey::Chip8_F);
 }

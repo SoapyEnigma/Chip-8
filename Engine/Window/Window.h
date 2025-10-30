@@ -14,6 +14,7 @@ public:
     void Render();
 
     bool ShouldClose();
+    void FlagToClose();
 
     GLFWwindow* GetHandle() { return _window; }
     const i32 GetWidth() const { return _width; }

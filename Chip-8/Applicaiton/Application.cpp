@@ -7,9 +7,6 @@
 #include <Engine/Renderer/Texture.h>
 #include <Engine/Window/Window.h>
 
-#define GLFW_INCLUDE_NONE
-#include <Vendor/glfw/include/GLFW/glfw3.h>
-
 Application::Application()
 {
     Init();
@@ -86,5 +83,5 @@ void Application::HandleInput()
         _chip->Reset();
 
     if (_inputManager->IsSpecialKeyPressed(SpecialKey::ESCAPE))
-        glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
+        _window->FlagToClose();
 }

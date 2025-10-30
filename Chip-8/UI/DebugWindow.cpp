@@ -4,8 +4,6 @@
 
 #include <Engine/Renderer/Texture.h>
 #include <Engine/Window/Window.h>
-#define GLFW_INCLUDE_NONE
-#include <Vendor/glfw/include/GLFW/glfw3.h>
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -38,15 +36,7 @@ void DebugWindow::Render(Texture* texture)
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        GLFWwindow* backup = glfwGetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup);
-    }
+    ImGui::UpdatePlatformWindows();
 }
 
 void DebugWindow::Init()

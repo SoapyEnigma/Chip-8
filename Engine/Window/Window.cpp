@@ -33,6 +33,11 @@ bool Window::ShouldClose()
     return glfwWindowShouldClose(_window);
 }
 
+void Window::FlagToClose()
+{
+    glfwSetWindowShouldClose(_window, true);
+}
+
 void Window::Init()
 {
     glfwInit();
