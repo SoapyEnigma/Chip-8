@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Types.h"
-#include "Audio.h"
+#include <Engine/Util/Types.h>
+#include <Engine/Audio/Audio.h>
 
 #include <array>
 #include <random>
@@ -31,20 +31,20 @@ private:
     std::array<u32, 64 * 32> _lowRes{};
     std::array<u32, 128 * 64> _hiRes{};
 
-    u16 _opcode;
-    u16 _index;
-    u16 _pc;
-    u16 _sp;
+    u16 _opcode{};
+    u16 _index{};
+    u16 _pc{};
+    u16 _sp{};
 
-    u16 _addr; // Lowest 12 bits
-    u8 _byte; // Lowest 8 bits
-    u16 _hNibble; // Highest 4 bits
-    u16 _lNibble; // Lowest 4 bits
-    u8 _x; // Lower 4 bits of high byte
-    u8 _y; // Upper 4 bits of low byte
+    u16 _addr{}; // Lowest 12 bits
+    u8 _byte{}; // Lowest 8 bits
+    u16 _hNibble{}; // Highest 4 bits
+    u16 _lNibble{}; // Lowest 4 bits
+    u8 _x{}; // Lower 4 bits of high byte
+    u8 _y{}; // Upper 4 bits of low byte
 
-    u8 _delayTimer;
-    u8 _soundTimer;
+    u8 _delayTimer{};
+    u8 _soundTimer{};
 
     Audio _audio = {};
     bool _audioStarted = false;

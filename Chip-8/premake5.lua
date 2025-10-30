@@ -5,44 +5,33 @@ project "Chip8"
     targetdir ("%{wks.location}/bin/%{cfg.buildcfg}")
     objdir ("%{wks.location}/bin-int/%{cfg.buildcfg}")
 
-    dependson { "glad", "glfw", "imgui", "miniaudio" }
+    dependson { "Engine" }
 
     files { "**.h", "**.cpp" }
 
     includedirs
     {
-        "%{wks.location}/Vendor/glfw/include",
-        "%{wks.location}/Vendor/glad/include",
+        "%{wks.location}",
+        "%{wks.location}/Chip-8",
         "%{wks.location}/Vendor/imgui",
-        "%{wks.location}/Vendor/miniaudio",
 
-        "Chip8",
-        "Entry",
-        "UI",
-        "Util",
-        "Window",
-        "Audio",
-        "Input"
+        "%{wks.location}/Engine",
+
+        --"Chip8",
+        --"Application",
     }
 
     links
     {
-        "opengl32",
-        "glad",
-        "glfw",
+        "Engine",
         "imgui",
-        "miniaudio"
     }
 
     vpaths
     {
         ["Chip8"] = { "Chip8/**.h", "Chip8/**.cpp" },
+        ["Application"] = { "Application/**.h", "Application/**.cpp" },
         ["UI"] = { "UI/**.h", "UI/**.cpp" },
-        ["Window"] = { "Window/**.h", "Window/**.cpp" },
-        ["Util"] = { "Util/**.h", "Util/**.cpp" },
-        ["Entry"] = { "Entry/**.h", "Entry/**.cpp" },
-        ["Audio"] = { "Audio/**.h", "Audio/**.cpp" },
-        ["Input"] = { "Input/**.h", "Input/**.cpp" }
     }
 
     filter "configurations:Debug"

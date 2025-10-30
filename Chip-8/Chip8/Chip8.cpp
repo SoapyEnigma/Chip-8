@@ -1,10 +1,11 @@
 #include "Chip8.h"
 
-#include "InputManager.h"
-#include "Texture.h"
+#include <Engine/Input/InputManager.h>
+#include <Engine/Renderer/Texture.h>
+#include <Engine/Util/Types.h>
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <Vendor/glfw/include/GLFW/glfw3.h>
 
 #include <filesystem>
 #include <fstream>

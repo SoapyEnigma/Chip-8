@@ -1,12 +1,11 @@
 #include "DebugWindow.h"
 
-#include "Texture.h"
-#include "Window.h"
-#include "Chip8.h"
+#include "Chip8/Chip8.h"
 
+#include <Engine/Renderer/Texture.h>
+#include <Engine/Window/Window.h>
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <Vendor/glfw/include/GLFW/glfw3.h>
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>

@@ -1,13 +1,14 @@
 #include "Application.h"
 
-#include "Window.h"
-#include "Texture.h"
-#include "Chip8.h"
-#include "DebugWindow.h"
-#include "InputManager.h"
+#include "Chip8/Chip8.h"
+#include "UI/DebugWindow.h"
+
+#include <Engine/Input/InputManager.h>
+#include <Engine/Renderer/Texture.h>
+#include <Engine/Window/Window.h>
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <Vendor/glfw/include/GLFW/glfw3.h>
 
 Application::Application()
 {

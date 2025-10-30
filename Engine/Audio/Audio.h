@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Types.h"
+#include "Util/Types.h"
 
-#include "miniaudio.h"
+struct ma_engine;
+struct ma_sound;
+struct waveform;
 
 class Audio
 {
@@ -17,9 +19,9 @@ public:
     bool IsPlaying() const { return _playing; }
 
 private:
-    ma_engine _engine;
-    ma_waveform _wave;
-    ma_sound _sound;
+    ma_engine* _engine = nullptr;
+    waveform* _wave = nullptr;
+    ma_sound* _sound = nullptr;
 
     f32 _freq = 440.0f;
     i32 _sampleRate = 48000;
