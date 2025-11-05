@@ -2,6 +2,7 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <algorithm>
 
 void InputManager::AttachToWindow(GLFWwindow* window)
 {
@@ -18,12 +19,12 @@ void InputManager::AttachToWindow(GLFWwindow* window)
 
 void InputManager::Update()
 {
-    _pressedKeys.clear();
+    std::fill(_keyStates.begin(), _keyStates.end(), false);
 
     for (auto& [hostKey, emuKey] : _keyBindings)
     {
         if (glfwGetKey(_window, hostKey) == GLFW_PRESS)
-            _pressedKeys.insert(emuKey);
+            _keyStates[static_cast<size_t>(emuKey)] = true;
     }
 }
 
@@ -34,7 +35,7 @@ void InputManager::BindKey(i32 hostKey, EmulatorKey emuKey)
 
 bool InputManager::IsKeyDown(EmulatorKey key) const
 {
-    return _pressedKeys.contains(key);
+    return _keyStates[static_cast<size_t>(key)];
 }
 
 bool InputManager::IsSpecialKeyPressed(SpecialKey key) const

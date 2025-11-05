@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <span>
 
 Chip8::Chip8(InputManager* inputManager)
 {
@@ -57,13 +58,13 @@ void Chip8::LoadROM(std::string_view filePath)
 
 void Chip8::Reset()
 {
-    _cpu->Reset(_currentRom, _currRomSize);
+    _cpu->Reset(std::span<const char>(_currentRom));
 }
 
 void Chip8::Init(InputManager* inputManager)
 {
     _cpu = new CPU();
-    _cpu->Reset(_currentRom, _currRomSize);
+    _cpu->Reset(std::span<const char>(_currentRom));
 
     SetupKeyBindings(inputManager);
 }

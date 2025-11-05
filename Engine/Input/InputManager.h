@@ -2,8 +2,8 @@
 
 #include "Util/Types.h"
 
+#include <array>
 #include <unordered_map>
-#include <unordered_set>
 
 enum class SpecialKey
 {
@@ -40,7 +40,8 @@ private:
 private:
     GLFWwindow* _window = nullptr;
     std::unordered_map<i32, EmulatorKey> _keyBindings;
-    std::unordered_set<EmulatorKey> _pressedKeys;
+    static constexpr size_t kKeyCount = static_cast<size_t>(EmulatorKey::NES_Right) + 1;
+    std::array<bool, kKeyCount> _keyStates{};
     bool _escapePressed = false;
     bool _enterPressed = false;
 };

@@ -44,4 +44,10 @@ project "Engine"
 
     filter "configurations:Release"
         defines { "NDEBUG" }
-        optimize "On"
+        optimize "Full"
+        symbols "Off"
+        flags { "LinkTimeOptimization" }
+
+    filter { "configurations:Release", "system:not windows" }
+        buildoptions { "-ffunction-sections", "-fdata-sections" }
+        linkoptions { "-Wl,--gc-sections" }

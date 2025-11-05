@@ -1,6 +1,7 @@
 #include "CPU.h"
 
 #include <cstdio>
+#include <cstring>
 
 void CPU::Fetch()
 {
@@ -105,18 +106,21 @@ void CPU::UpdateTimers()
     if (_soundTimer > 0)
     {
         if (!_audioStarted)
+        {
             _audio.StartTone();
+            _audioStarted = _audio.IsPlaying();
+        }
 
         _soundTimer--;
     }
-    else
+    else if (_audioStarted)
     {
         _audio.StopTone();
         _audioStarted = false;
     }
 }
 
-void CPU::Reset(std::vector<char> rom, size_t romSize)
+void CPU::Reset(std::span<const char> rom)
 {
     _pc = START_ADDRESS;
     _opcode = 0;
@@ -148,8 +152,12 @@ void CPU::Reset(std::vector<char> rom, size_t romSize)
         _memory[HIRES_FONT_START + i] = _hiResFont[i];
 
     // Reload ROM
-    if (romSize)
-        std::copy(rom.begin(), rom.end(), _memory.begin() + START_ADDRESS);
+    if (!rom.empty())
+    {
+        const size_t available = _memory.size() - START_ADDRESS;
+        const size_t toCopy = (std::min)(rom.size(), available);
+        std::copy_n(rom.begin(), toCopy, _memory.begin() + START_ADDRESS);
+    }
 }
 
 std::string CPU::Disassemble(u16 addr) const
@@ -262,16 +270,30 @@ void CPU::OP_00CN()
     // Scroll Down N
     const i32 w = GetWidth();
     const i32 h = GetHeight();
+    auto* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
+    const i32 offset = _byte & 0x0F;
 
-    u32* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
-    std::vector<u32> src(buff, buff + (w * h));
+    if (offset == 0)
+        return;
 
-    for (i32 y = 0; y < h; y++)
+    if (offset >= h)
     {
-        for (i32 x = 0; x < w; x++)
+        std::fill(buff, buff + (w * h), 0);
+        return;
+    }
+
+    for (i32 y = h - 1; y >= 0; --y)
+    {
+        const i32 srcY = y - offset;
+        u32* dst = buff + y * w;
+        if (srcY >= 0)
         {
-            const i32 sy = y - (_byte & 0x0F);
-            buff[y * w + x] = (sy >= 0 && sy < h) ? src[sy * w + x] : 0;
+            const u32* src = buff + srcY * w;
+            std::memmove(dst, src, sizeof(u32) * w);
+        }
+        else
+        {
+            std::fill(dst, dst + w, 0);
         }
     }
 }
@@ -293,16 +315,21 @@ void CPU::OP_00FB()
     const i32 w = GetWidth();
     const i32 h = GetHeight();
 
-    u32* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
-    std::vector<u32> src(buff, buff + (w * h));
+    auto* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
+    constexpr i32 shift = 4;
 
-    for (i32 y = 0; y < h; y++)
+    if (shift >= w)
     {
-        for (i32 x = 0; x < w; x++)
-        {
-            const i32 sx = x - 4;
-            buff[y * w + x] = (sx >= 0 && sx < w) ? src[y * w + sx] : 0;
-        }
+        std::fill(buff, buff + (w * h), 0);
+        return;
+    }
+
+    const size_t copyCount = static_cast<size_t>(w - shift) * sizeof(u32);
+    for (i32 y = 0; y < h; ++y)
+    {
+        u32* row = buff + y * w;
+        std::memmove(row + shift, row, copyCount);
+        std::fill(row, row + shift, 0);
     }
 }
 
@@ -312,16 +339,21 @@ void CPU::OP_00FC()
     const i32 w = GetWidth();
     const i32 h = GetHeight();
 
-    u32* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
-    std::vector<u32> src(buff, buff + (w * h));
+    auto* buff = _isHiRes ? _hiRes.data() : _lowRes.data();
+    constexpr i32 shift = 4;
 
-    for (i32 y = 0; y < h; y++)
+    if (shift >= w)
     {
-        for (i32 x = 0; x < w; x++)
-        {
-            const i32 sx = x + 4;
-            buff[y * w + x] = (sx >= 0 && sx < w) ? src[y * w + sx] : 0;
-        }
+        std::fill(buff, buff + (w * h), 0);
+        return;
+    }
+
+    const size_t copyCount = static_cast<size_t>(w - shift) * sizeof(u32);
+    for (i32 y = 0; y < h; ++y)
+    {
+        u32* row = buff + y * w;
+        std::memmove(row, row + shift, copyCount);
+        std::fill(row + (w - shift), row + w, 0);
     }
 }
 

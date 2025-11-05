@@ -41,5 +41,11 @@ project "Chip8"
         kind "WindowedApp"
         entrypoint "mainCRTStartup"
         defines { "NDEBUG" }
-        optimize "On"
+        optimize "Full"
+        symbols "Off"
+        flags { "LinkTimeOptimization" }
         postbuildcommands { "{COPYDIR} Roms %{cfg.targetdir}/Roms" }
+
+    filter { "configurations:Release", "system:not windows" }
+        buildoptions { "-ffunction-sections", "-fdata-sections" }
+        linkoptions { "-Wl,--gc-sections" }

@@ -3,8 +3,10 @@
 #include <Engine/Util/Types.h>
 #include <Engine/Audio/Audio.h>
 
+#include <algorithm>
 #include <array>
 #include <random>
+#include <span>
 #include <vector>
 
 class CPU
@@ -15,7 +17,7 @@ public:
     void Execute();
     void UpdateTimers();
 
-    void Reset(std::vector<char> rom, size_t romSize);
+    void Reset(std::span<const char> rom);
 
     std::string Disassemble(u16 addr) const;
 

@@ -2,6 +2,8 @@
 
 #include "Util/Types.h"
 
+#include <memory>
+
 struct ma_engine;
 struct ma_sound;
 struct waveform;
@@ -9,8 +11,8 @@ struct waveform;
 class Audio
 {
 public:
-    Audio() { Init(); }
-    ~Audio() { Shutdown(); }
+    Audio() = default;
+    ~Audio();
 
     void Init(i32 sampleRate = 48000);
     void Shutdown();
@@ -19,11 +21,14 @@ public:
     bool IsPlaying() const { return _playing; }
 
 private:
-    ma_engine* _engine = nullptr;
-    waveform* _wave = nullptr;
-    ma_sound* _sound = nullptr;
+    void EnsureInitialized();
+
+    std::unique_ptr<ma_engine> _engine;
+    std::unique_ptr<waveform> _wave;
+    std::unique_ptr<ma_sound> _sound;
 
     f32 _freq = 440.0f;
     i32 _sampleRate = 48000;
     bool _playing = false;
+    bool _initialized = false;
 };

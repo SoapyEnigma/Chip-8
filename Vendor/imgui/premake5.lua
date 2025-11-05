@@ -16,7 +16,12 @@ project "imgui"
         "backends/imgui_impl_glfw.h",
         "backends/imgui_impl_glfw.cpp",
         "backends/imgui_impl_opengl3.h",
-        "backends/imgui_impl_opengl3.cpp",
+        "backends/imgui_impl_opengl3.cpp"
+    }
+
+    removefiles
+    {
+        "imgui_demo.cpp",
         "misc/cpp/*.cpp"
     }
     
@@ -40,4 +45,10 @@ project "imgui"
 
     filter "configurations:Release"
         defines { "NDEBUG" }
-        optimize "On"
+        optimize "Full"
+        symbols "Off"
+        flags { "LinkTimeOptimization" }
+
+    filter { "configurations:Release", "system:not windows" }
+        buildoptions { "-ffunction-sections", "-fdata-sections" }
+        linkoptions { "-Wl,--gc-sections" }
